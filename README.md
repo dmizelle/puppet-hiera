@@ -98,6 +98,50 @@ The resulting output in /etc/puppet/hiera.yaml:
 :merge_behavior: deep
 ```
 
+**Configure with hirea-eyaml-gpg**
+```puppet
+class { 'hiera':
+  hierarchy => [
+    'nodes/%{::clientcert}',
+    'locations/%{::location}',
+    'environments/%{::applicationtier}',
+    'common',
+  ],
+  logger               => 'console',
+  eyaml                => true,
+  eyaml_gpg            => true,
+  eyaml_gpg_keygen     => true,
+  eyaml_gpg_recipients => 'sihil@example.com,gtmtech@example.com,tpoulton@example.com',
+}
+```
+
+The resulting output in /etc/puppet/hiera.yaml:
+```yaml
+---
+:backends:
+  - eyaml
+  - yaml
+:logger: console
+:hierarchy:
+  - "nodes/%{::clientcert}"
+  - "locations/%{::location}"
+  - "environments/%{::applicationtier}"
+  - common
+
+:yaml:
+   :datadir: /etc/puppet/hieradata
+
+
+:eyaml:
+   :datadir: /etc/puppet/hieradata
+   :pkcs7_private_key: /etc/puppet/keys/private_key.pkcs7.pem
+   :pkcs7_public_key:  /etc/puppet/keys/public_key.pkcs7.pem
+   :encrypt_method: "gpg"
+   :gpg_gnupghome: "/etc/puppet/keys/gpg"
+   :gpg_recipients: "sihil@example.com,gtmtech@example.com,tpoulton@example.com"
+```
+
+
 ### Classes
 
 #### Public Classes
@@ -106,6 +150,7 @@ The resulting output in /etc/puppet/hiera.yaml:
 #### Private Classes
 - hiera::params: Handles variable conditionals
 - hiera::eyaml: Handles eyaml configuration
+- hiera::eyaml_gpg: Handles eyaml-gpg plugin configuration
 
 ### Parameters
 
@@ -131,6 +176,12 @@ Enables/disables the eyaml backend. Default true
 Configures the eyaml data directory. Default is the same as datadir
 #### `eyaml_extension`
 Configures the eyaml file extension. No default
+#### `eyaml_gpg`
+Enables/disable the eyaml backend. Default false
+#### `eyaml_gpg_keygen`
+Generate a GPG Keyring. Default false ( Currently only works for RedHat OS Family )
+#### `eyaml_gpg_recipients`
+Sets the gpg recipients list in hiera.yaml for hirea-eyaml-gpg
 #### `confdir`
 Configures the directory for puppet's confdir.
 #### `logger`

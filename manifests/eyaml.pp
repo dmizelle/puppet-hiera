@@ -11,11 +11,12 @@
 # Copyright (C) 2014 Terri Haber, unless otherwise noted.
 #
 class hiera::eyaml (
-  $provider = $hiera::params::provider,
-  $owner    = $hiera::owner,
-  $group    = $hiera::group,
-  $cmdpath  = $hiera::cmdpath,
-  $confdir  = $hiera::confdir
+  $provider  = $hiera::params::provider,
+  $owner     = $hiera::owner,
+  $group     = $hiera::group,
+  $cmdpath   = $hiera::cmdpath,
+  $confdir   = $hiera::confdir,
+  $eyaml_gpg = $hiera::eyaml_gpg,
 ) inherits hiera::params {
 
   package { 'hiera-eyaml':
@@ -28,6 +29,17 @@ class hiera::eyaml (
     owner  => $owner,
     group  => $group,
     before => Exec['createkeys'],
+  }
+
+  # Removing the hiera-eyaml-gpg gem if its installed and we need to generate keys
+  # There is a bug where it wont allow puppet to run eyaml createkeys if both are installed
+  exec { 'remove_hiera_eyaml_gpg':
+    command => 'gem uninstall hiera-eyaml-gpg',
+    onlyif  => 'gem list hiera-eyaml-gpg -i > /dev/null',
+    path    => $cmdpath,
+    creates => "${confdir}/keys/private_key.pkcs7.pem",
+    require => Package['hiera-eyaml'],
+    before  => Exec['createkeys'],
   }
 
   exec { 'createkeys':

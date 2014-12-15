@@ -8,4 +8,4 @@ description ''
 project_page 'https://github.com/hunner/hunner-hiera'
 
 ## Add dependencies, if any:
-# dependency 'username/name', '>= 1.2.0'
+dependency 'puppetlabs/ruby',    '>= 0.4.0'

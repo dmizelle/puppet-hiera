@@ -49,6 +49,19 @@
 #   File extension for eyaml backend
 #   Default: undef, use backend default
 #
+# [*eyaml_gpg*]
+#   Install and configure hiera-eyaml-gpg
+#   Default: false
+#
+# [*eyaml_gpg_keygen*]
+#   Generate GPG Keyring for Hiera Data Encryption
+#   Assues you have your keyring in a seperate VCS repository
+#   Default: false
+#
+# [*eyaml_gpg_recipients*]
+#   Sets list of gpg recipients via hirea.yaml
+#   Default: undef
+#
 # [*logger*]
 #   Configure a valid hiera logger
 #   Note: You need to manage any package/gem dependancies
@@ -97,22 +110,26 @@
 # Copyright (C) 2014 Terri Haber, unless otherwise noted.
 #
 class hiera (
-  $hierarchy       = [],
-  $backends        = $hiera::params::backends,
-  $hiera_yaml      = $hiera::params::hiera_yaml,
-  $datadir         = $hiera::params::datadir,
-  $datadir_manage  = $hiera::params::datadir_manage,
-  $owner           = $hiera::params::owner,
-  $group           = $hiera::params::group,
-  $eyaml           = false,
-  $eyaml_datadir   = $hiera::params::datadir,
-  $eyaml_extension = $hiera::params::eyaml_extension,
-  $confdir         = $hiera::params::confdir,
-  $logger          = $hiera::params::logger,
-  $cmdpath         = $hiera::params::cmdpath,
-  $merge_behavior  = undef,
-  $extra_config    = '',
+  $hierarchy            = [],
+  $backends             = $hiera::params::backends,
+  $hiera_yaml           = $hiera::params::hiera_yaml,
+  $datadir              = $hiera::params::datadir,
+  $datadir_manage       = $hiera::params::datadir_manage,
+  $owner                = $hiera::params::owner,
+  $group                = $hiera::params::group,
+  $eyaml                = false,
+  $eyaml_datadir        = $hiera::params::datadir,
+  $eyaml_extension      = $hiera::params::eyaml_extension,
+  $eyaml_gpg            = false,
+  $eyaml_gpg_keygen     = false,
+  $eyaml_gpg_recipients = $hiera::params::eyaml_gpg_recipients,
+  $confdir              = $hiera::params::confdir,
+  $logger               = $hiera::params::logger,
+  $cmdpath              = $hiera::params::cmdpath,
+  $merge_behavior       = undef,
+  $extra_config         = '',
 ) inherits hiera::params {
+
   File {
     owner => $owner,
     group => $group,
@@ -123,7 +140,9 @@ class hiera (
       ensure => directory,
     }
   }
-  if $eyaml {
+  if $eyaml_gpg {
+    require hiera::eyaml_gpg
+  } elsif $eyaml {
     require hiera::eyaml
   }
   # Template uses:
@@ -145,5 +164,5 @@ class hiera (
   file { '/etc/hiera.yaml':
     ensure => symlink,
     target => $hiera_yaml,
-  }  
+  }
 }

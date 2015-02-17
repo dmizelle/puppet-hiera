@@ -35,7 +35,8 @@ class hiera::params {
   $logger               = 'console'
   $eyaml_extension      = undef
   $eyaml_gpg_recipients = undef
-  
+  $create_keys          = true
+  $gem_source           = undef
   if $::osfamily == 'RedHat' {
     $gnupg_package         = 'gnupg2'
   }

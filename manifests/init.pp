@@ -72,10 +72,19 @@
 #   Note: You need to manage any package/gem dependancies
 #   Default: native
 #
+# [*create_keys*]
+#   Enable or disable pkcs7 key generation and file management with hiera-eyaml
+#   This is helpful if you need to distribute a pkcs7 key pair
+#   Default: true
+#
 # [*cmdpath*]
 #   Search paths for command binaries, like the 'eyaml' command.
 #   The default should cover most cases.
 #   Default: ['/opt/puppet/bin', '/usr/bin', '/usr/local/bin']
+#
+# [*gem_source*]
+#   Configure an alternative Gem source
+#   Default: undef, use backend default
 #
 # === Actions:
 #
@@ -126,6 +135,8 @@ class hiera (
   $confdir              = $hiera::params::confdir,
   $logger               = $hiera::params::logger,
   $cmdpath              = $hiera::params::cmdpath,
+  $create_keys          = $hiera::params::create_keys,
+  $gem_source           = $hiera::params::gem_source,
   $merge_behavior       = undef,
   $extra_config         = '',
 ) inherits hiera::params {

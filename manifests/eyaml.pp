@@ -47,15 +47,6 @@ class hiera::eyaml (
     before  => Exec['createkeys'],
   }
 
-  exec { 'createkeys':
-    user    => $owner,
-    cwd     => $confdir,
-    command => 'eyaml createkeys',
-    path    => $cmdpath,
-    creates => "${confdir}/keys/private_key.pkcs7.pem",
-    require => Package['hiera-eyaml'],
-  }
-
   if ( $create_keys == true ) {
     exec { 'createkeys':
       user    => $owner,
